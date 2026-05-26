@@ -1,5 +1,6 @@
 import logging
 import os
+from pathlib import Path
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,6 +11,9 @@ from app.core.database import init_db
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Absolute path to dist/ — works regardless of working directory
+DIST_DIR = Path("/app/dist")
 
 
 @asynccontextmanager
@@ -56,16 +60,25 @@ def health_check():
     except Exception as e:
         db_status = f"error: {e}"
 
+    dist_exists = DIST_DIR.exists()
+    dist_has_index = (DIST_DIR / "index.html").exists() if dist_exists else False
+
     return {
         "status": "ok",
         "service": "Subsoil Management API",
         "db": db_status,
+        "frontend": {
+            "dist_path": str(DIST_DIR),
+            "dist_exists": dist_exists,
+            "index_html": dist_has_index,
+        },
         "cors_origins": origins,
     }
 
 
-# Serve React SPA — must be last so API routes take priority
-DIST_DIR = os.path.join(os.path.dirname(__file__), "dist")
-if os.path.exists(DIST_DIR):
-    app.mount("/", StaticFiles(directory=DIST_DIR, html=True), name="static")
-    logger.info(f"Serving frontend from {DIST_DIR}")
+# Serve React SPA — must be LAST so /api/* routes take priority
+if DIST_DIR.exists() and (DIST_DIR / "index.html").exists():
+    app.mount("/", StaticFiles(directory=str(DIST_DIR), html=True), name="static")
+    logger.info(f"Serving React frontend from {DIST_DIR}")
+else:
+    logger.warning(f"Frontend dist not found at {DIST_DIR} — only API available")
