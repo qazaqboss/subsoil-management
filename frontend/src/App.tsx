@@ -11,6 +11,7 @@ import Tests from './pages/Tests'
 import Reports from './pages/Reports'
 import AIAssistant from './pages/AIAssistant'
 import Settings from './pages/Settings'
+import LifecycleTimeline from './pages/LifecycleTimeline'
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="lifecycle" element={<LifecycleTimeline />} />
           <Route path="licenses" element={<LicensesList />} />
           <Route path="licenses/:id" element={<LicenseDetail />} />
           <Route path="calendar" element={<Calendar />} />

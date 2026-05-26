@@ -1,0 +1,4 @@
+# This is a monorepo with two Railway services.
+# Backend service: set Root Directory = "backend"
+# Frontend service: set Root Directory = "frontend"
+# See RAILWAY_DEPLOY.md for full instructions.

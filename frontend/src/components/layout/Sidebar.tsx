@@ -8,16 +8,37 @@ interface NavItem {
   badge?: number
 }
 
-const navItems: NavItem[] = [
-  { icon: '📊', label: 'Обзор', path: '/dashboard' },
-  { icon: '📜', label: 'Лицензии', path: '/licenses', badge: 1 },
-  { icon: '📅', label: 'Календарь', path: '/calendar' },
-  { icon: '🏗️', label: 'Скважины', path: '/wells' },
-  { icon: '👷', label: 'Подрядчики', path: '/contractors' },
-  { icon: '🧪', label: 'Испытания', path: '/tests' },
-  { icon: '📄', label: 'Отчеты', path: '/reports' },
-  { icon: '🤖', label: 'AI-помощник', path: '/ai-assistant' },
-  { icon: '⚙️', label: 'Настройки', path: '/settings' },
+interface NavGroup {
+  label: string
+  items: NavItem[]
+}
+
+const navGroups: NavGroup[] = [
+  {
+    label: 'Главное',
+    items: [
+      { icon: '📊', label: 'Обзор', path: '/dashboard' },
+      { icon: '🔄', label: 'Жизненный цикл', path: '/lifecycle' },
+    ],
+  },
+  {
+    label: 'Управление',
+    items: [
+      { icon: '📜', label: 'Лицензии', path: '/licenses', badge: 1 },
+      { icon: '📅', label: 'Календарь', path: '/calendar' },
+      { icon: '🏗️', label: 'Скважины', path: '/wells' },
+      { icon: '👷', label: 'Подрядчики', path: '/contractors' },
+      { icon: '🧪', label: 'Испытания', path: '/tests' },
+      { icon: '📄', label: 'Отчеты', path: '/reports' },
+    ],
+  },
+  {
+    label: 'Инструменты',
+    items: [
+      { icon: '🤖', label: 'AI-помощник', path: '/ai-assistant' },
+      { icon: '⚙️', label: 'Настройки', path: '/settings' },
+    ],
+  },
 ]
 
 interface SidebarProps {
@@ -63,27 +84,34 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
         {/* Navigation */}
         <nav className="flex-1 py-4 px-3 overflow-y-auto">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              onClick={onClose}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-md mb-1 text-sm font-medium transition-all duration-200 ${
-                  isActive
-                    ? 'bg-primary-100 text-primary-700'
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                }`
-              }
-            >
-              <span className="text-base">{item.icon}</span>
-              <span className="flex-1">{item.label}</span>
-              {item.badge && (
-                <span className="bg-error-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-semibold">
-                  {item.badge}
-                </span>
-              )}
-            </NavLink>
+          {navGroups.map((group) => (
+            <div key={group.label} className="mb-4">
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider px-3 mb-1">
+                {group.label}
+              </p>
+              {group.items.map((item) => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  onClick={onClose}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-3 py-2.5 rounded-md mb-0.5 text-sm font-medium transition-all duration-200 ${
+                      isActive
+                        ? 'bg-primary-100 text-primary-700'
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    }`
+                  }
+                >
+                  <span className="text-base">{item.icon}</span>
+                  <span className="flex-1">{item.label}</span>
+                  {item.badge && (
+                    <span className="bg-error-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-semibold">
+                      {item.badge}
+                    </span>
+                  )}
+                </NavLink>
+              ))}
+            </div>
           ))}
         </nav>
 
