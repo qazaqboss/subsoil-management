@@ -1,7 +1,9 @@
 import logging
+import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from app.api.routes import licenses, reports, wells, ai, lifecycle
 from app.core.config import settings
 from app.core.database import init_db
@@ -31,7 +33,7 @@ origins = settings.cors_origins
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=origins != ["*"],  # credentials not allowed with wildcard
+    allow_credentials=origins != ["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -60,3 +62,10 @@ def health_check():
         "db": db_status,
         "cors_origins": origins,
     }
+
+
+# Serve React SPA — must be last so API routes take priority
+DIST_DIR = os.path.join(os.path.dirname(__file__), "dist")
+if os.path.exists(DIST_DIR):
+    app.mount("/", StaticFiles(directory=DIST_DIR, html=True), name="static")
+    logger.info(f"Serving frontend from {DIST_DIR}")
