@@ -54,12 +54,30 @@ export default function WellDetail() {
         ← Назад к скважинам
       </Link>
 
-      <div>
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-gray-900">🏗️ Скважина №{id || '47'}</h1>
-          <span className="bg-amber-100 text-warning-500 text-sm px-3 py-1 rounded-full font-medium">🟡 Испытание</span>
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold text-gray-900">🏗️ Скважина №{id || '47'}</h1>
+            <span className="bg-amber-100 text-warning-500 text-sm px-3 py-1 rounded-full font-medium">🟡 Испытание</span>
+          </div>
+          <p className="text-gray-600 mt-1">Месторождение "Каражанбас" | Лицензия МГ-00123</p>
         </div>
-        <p className="text-gray-600 mt-1">Месторождение "Каражанбас" | Лицензия МГ-00123</p>
+        <div className="flex gap-2 flex-shrink-0">
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => window.open(`${import.meta.env.VITE_API_URL ?? ''}/api/reports/pdf/passport/${id || 1}`, '_blank')}
+          >
+            📄 Паспорт PDF
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => showToast('Запрос статуса отправлен подрядчику')}
+          >
+            Запросить статус
+          </Button>
+        </div>
       </div>
 
       {/* Lifecycle */}

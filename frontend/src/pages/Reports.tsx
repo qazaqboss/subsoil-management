@@ -548,6 +548,57 @@ function ViewModal({ report, onClose }: ViewModalProps) {
   )
 }
 
+// ─── Stage PDF Downloads ──────────────────────────────────────────────────────
+
+const STAGE_PDFS = [
+  { num: 1, name: 'Разведка',               color: 'bg-blue-50 border-blue-200 text-blue-700' },
+  { num: 2, name: 'Оценка',                 color: 'bg-indigo-50 border-indigo-200 text-indigo-700' },
+  { num: 3, name: 'Гос. Баланс',            color: 'bg-purple-50 border-purple-200 text-purple-700' },
+  { num: 4, name: 'Подготовительный',       color: 'bg-amber-50 border-amber-200 text-amber-700' },
+  { num: 5, name: 'Полномасштабная добыча', color: 'bg-green-50 border-green-200 text-green-700' },
+  { num: 6, name: 'Ликвидация',             color: 'bg-orange-50 border-orange-200 text-orange-700' },
+  { num: 7, name: 'Сдача территории',       color: 'bg-gray-50 border-gray-200 text-gray-700' },
+]
+
+const API_URL = import.meta.env.VITE_API_URL ?? ''
+
+function StagePdfSection() {
+  const [downloading, setDownloading] = useState<number | null>(null)
+
+  async function downloadPdf(stage: number) {
+    setDownloading(stage)
+    try {
+      window.open(`${API_URL}/api/reports/pdf/stage/${stage}`, '_blank')
+    } finally {
+      setTimeout(() => setDownloading(null), 1500)
+    }
+  }
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-xl p-5">
+      <div className="flex items-center gap-2 mb-4">
+        <span className="text-lg">📋</span>
+        <h2 className="font-semibold text-gray-900">Отчёты по этапам недропользования</h2>
+        <span className="text-xs text-gray-500 ml-1">PDF · КОНН РК · ЭК РК · ЕПРКИН</span>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
+        {STAGE_PDFS.map((s) => (
+          <button
+            key={s.num}
+            onClick={() => downloadPdf(s.num)}
+            disabled={downloading === s.num}
+            className={`flex flex-col items-center gap-1.5 border rounded-lg p-3 text-center transition-all hover:shadow-md active:scale-95 ${s.color} disabled:opacity-60`}
+          >
+            <span className="text-2xl">{downloading === s.num ? '⏳' : '📄'}</span>
+            <span className="text-xs font-bold leading-tight">Этап {s.num}</span>
+            <span className="text-[10px] leading-tight opacity-80">{s.name}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // ─── Reports page ─────────────────────────────────────────────────────────────
 
 export default function Reports() {
@@ -600,10 +651,13 @@ export default function Reports() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Stage PDF Downloads */}
+      <StagePdfSection />
+
+      {/* Header */
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">📄 Отчёты</h1>
+          <h1 className="text-2xl font-bold text-gray-900">📄 Отчётность</h1>
           <p className="text-sm text-gray-500 mt-1">
             {counts.overdue > 0 && <span className="text-error-500 font-medium">{counts.overdue} просрочено · </span>}
             {counts.due_today > 0 && <span className="text-warning-500 font-medium">{counts.due_today} сегодня · </span>}
